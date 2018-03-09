@@ -1,0 +1,16 @@
+{
+  "name": "vue-earth-satellite",
+  "scripts": {
+    "dev": "node_modules/parcel-bundler/bin/cli.js src/index.html",
+    "build": "node_modules/parcel-bundler/bin/cli.js build src/index.html --public-url ./"
+  },
+  "dependencies": {
+    "@types/three": "^0.89.11",
+    "three": "^0.90.0",
+    "three-orbit-controls": "^82.1.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.6.2",
+    "typescript": "^2.7.2"
+  }
+}
