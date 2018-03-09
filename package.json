@@ -2,7 +2,7 @@
   "name": "vue-earth-satellite",
   "scripts": {
     "dev": "node_modules/parcel-bundler/bin/cli.js src/index.html",
-    "build": "node_modules/parcel-bundler/bin/cli.js build src/index.html --public-url ./"
+    "build": "node_modules/parcel-bundler/bin/cli.js build src/index.html --public-url ./ -d docs"
   },
   "dependencies": {
     "@types/three": "^0.89.11",
