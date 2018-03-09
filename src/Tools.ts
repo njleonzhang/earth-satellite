@@ -4,6 +4,7 @@ import starFieldImg from './images/galaxy_starfield.png'
 import moonImg from './images/moon_texture.jpg'
 
 let loader = new THREE.TextureLoader()
+let orbitColor = 0xffeecc
 
 function loadImg(imgPath: string) {
   return loader.load(imgPath)
@@ -21,7 +22,7 @@ function createOrbit(radius: number, angle: number = 0, opacity: number = 0) {
   var orbit = new THREE.Mesh(
     new THREE.RingGeometry(radius, radius + .1, 100, 20, angle, Math.PI * 2),
     new THREE.MeshBasicMaterial({
-      color: 0xffeecc,
+      color: orbitColor,
       side: THREE.DoubleSide
     })
   )
@@ -85,4 +86,28 @@ export function drawMoon(scene: THREE.Scene, earth: THREE.Object3D) {
   moonOrbit.rotation.x = Math.PI / 2
   scene.add(moonOrbit)
   return moon
+}
+
+export function drawSatellite(scene: THREE.Scene) {
+  let satellite = createSphere(3.5, 50, moonImg)
+  satellite.position.set(30, 0, 0)
+  scene.add(satellite)
+
+  var curve = new THREE.EllipseCurve(
+    0,  0,            // ax, aY
+    30, 50,           // xRadius, yRadius
+    0,  2 * Math.PI,  // aStartAngle, aEndAngle
+    false,            // aClockwise
+    0                 // aRotation
+  )
+
+  var geometry = new THREE.Geometry().setFromPoints(curve.getPoints(500))
+  var material = new THREE.LineBasicMaterial({
+    color: orbitColor
+  })
+
+  var ellipse = new THREE.Line(geometry, material)
+
+  scene.add(ellipse)
+  return satellite
 }

@@ -71,7 +71,7 @@ require = (function (modules, cache, entry) {
 
   // Override the current require with this new one
   return newRequire;
-})({35:[function(require,module,exports) {
+})({9:[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -101,7 +101,7 @@ function getBaseURL(url) {
 
 exports.getBundleURL = getBundleURLCached;
 exports.getBaseURL = getBaseURL;
-},{}],34:[function(require,module,exports) {
+},{}],5:[function(require,module,exports) {
 var bundle = require('./bundle-url');
 
 function updateLink(link) {
@@ -132,13 +132,13 @@ function reloadCSS() {
 }
 
 module.exports = reloadCSS;
-},{"./bundle-url":35}],33:[function(require,module,exports) {
+},{"./bundle-url":9}],3:[function(require,module,exports) {
 
         var reloadCSS = require('_css_loader');
         module.hot.dispose(reloadCSS);
         module.hot.accept(reloadCSS);
       
-},{"_css_loader":34}],5:[function(require,module,exports) {
+},{"_css_loader":5}],11:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -41132,13 +41132,13 @@ exports.Projector = Projector;
 exports.CanvasRenderer = CanvasRenderer;
 exports.SceneUtils = SceneUtils;
 exports.LensFlare = LensFlare;
-},{}],4:[function(require,module,exports) {
+},{}],6:[function(require,module,exports) {
 module.exports="/dist/bd420e80054d3549a92e1c00025ee59a.jpg";
-},{}],38:[function(require,module,exports) {
+},{}],8:[function(require,module,exports) {
 module.exports="/dist/fb92769c1006883dcefe2b1b6d5a2a8a.png";
-},{}],41:[function(require,module,exports) {
+},{}],7:[function(require,module,exports) {
 module.exports="/dist/b6516b615e70738738508d6898bc2d95.jpg";
-},{}],3:[function(require,module,exports) {
+},{}],4:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -41147,6 +41147,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.drawEarth = drawEarth;
 exports.drawStars = drawStars;
 exports.drawMoon = drawMoon;
+exports.drawSatellite = drawSatellite;
 
 var _three = require('three');
 
@@ -41169,6 +41170,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var loader = new THREE.TextureLoader();
+var orbitColor = 0xffeecc;
 function loadImg(imgPath) {
     return loader.load(imgPath);
 }
@@ -41188,7 +41190,7 @@ function createOrbit(radius, angle, opacity) {
         opacity = 0;
     }
     var orbit = new THREE.Mesh(new THREE.RingGeometry(radius, radius + .1, 100, 20, angle, Math.PI * 2), new THREE.MeshBasicMaterial({
-        color: 0xffeecc,
+        color: orbitColor,
         side: THREE.DoubleSide
     }));
     return orbit;
@@ -41243,7 +41245,25 @@ function drawMoon(scene, earth) {
     scene.add(moonOrbit);
     return moon;
 }
-},{"three":5,"./images/earth.jpg":4,"./images/galaxy_starfield.png":38,"./images/moon_texture.jpg":41}],23:[function(require,module,exports) {
+function drawSatellite(scene) {
+    var satellite = createSphere(3.5, 50, _moon_texture2.default);
+    satellite.position.set(30, 0, 0);
+    scene.add(satellite);
+    var curve = new THREE.EllipseCurve(0, 0, // ax, aY
+    30, 50, // xRadius, yRadius
+    0, 2 * Math.PI, // aStartAngle, aEndAngle
+    false, // aClockwise
+    0 // aRotation
+    );
+    var geometry = new THREE.Geometry().setFromPoints(curve.getPoints(500));
+    var material = new THREE.LineBasicMaterial({
+        color: orbitColor
+    });
+    var ellipse = new THREE.Line(geometry, material);
+    scene.add(ellipse);
+    return satellite;
+}
+},{"three":11,"./images/earth.jpg":6,"./images/galaxy_starfield.png":8,"./images/moon_texture.jpg":7}],10:[function(require,module,exports) {
 module.exports = function( THREE ) {
 	/**
 	 * @author qiao / https://github.com/qiao
@@ -42289,8 +42309,8 @@ var OrbitControls = (0, _threeOrbitControls2.default)(THREE);
 var scene = new THREE.Scene();
 // 摄像机 （视角，宽高比，近裁剪面，远裁剪面）
 var camera = new THREE.PerspectiveCamera(74, window.innerWidth / window.innerHeight, 0.1, 10000);
-// camera.position.set(0, 35, 70);
-camera.position.set(0, 0, -50);
+camera.position.set(0, 35, 70);
+// camera.position.set(0, 0, -50);
 // 渲染器
 var renderer = new THREE.WebGLRenderer();
 // 设置目标屏幕的宽高
@@ -42302,16 +42322,24 @@ var controls = new OrbitControls(camera);
 var earth = (0, _Tools.drawEarth)(scene);
 (0, _Tools.drawStars)(scene);
 var moon = (0, _Tools.drawMoon)(scene, earth);
-// 坐标系
+// 画卫星
+var statllite = (0, _Tools.drawSatellite)(scene);
+// 坐标系 for debug
 var arrowHelper1 = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0), 50);
 var arrowHelper2 = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, -1, 0), 50);
 var arrowHelper3 = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, -1), 50);
 scene.add(arrowHelper1);
 scene.add(arrowHelper2);
 scene.add(arrowHelper3);
+// 圆形的初始者
 var r = 35;
 var theta = 0;
 var dTheta = 2 * Math.PI / 1000;
+// 卫星轨道初始值
+var a = 30;
+var b = 50;
+var sThets = 2 * Math.PI / 500;
+var currentSThes = 0;
 // 光源
 // var pointofLight = new THREE.PointLight('yellow');
 // pointofLight.position.x = 0;
@@ -42324,11 +42352,14 @@ function render() {
     theta += dTheta;
     moon.position.x = r * Math.cos(theta);
     moon.position.z = r * Math.sin(theta);
+    currentSThes += sThets;
+    statllite.position.x = a * Math.cos(currentSThes);
+    statllite.position.y = b * Math.sin(currentSThes);
     controls.update(); // 更新控制
     renderer.render(scene, camera);
 }
 render();
-},{"./main.css":33,"three":5,"./Tools":3,"three-orbit-controls":23}],52:[function(require,module,exports) {
+},{"./main.css":3,"three":11,"./Tools":4,"three-orbit-controls":10}],12:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -42350,7 +42381,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '55863' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '64124' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -42451,5 +42482,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[52,2])
+},{}]},{},[12,2])
 //# sourceMappingURL=/dist/e9f1fe26c191139472512a48b99716e6.map
